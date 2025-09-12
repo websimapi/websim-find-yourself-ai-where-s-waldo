@@ -32,6 +32,22 @@ header p {
     color: #666;
 }
 
+#gameDescription {
+    font-size: 0.9rem;
+    line-height: 1.4;
+    color: #555;
+    background: #f8f9fa;
+    padding: 15px;
+    border-radius: 8px;
+    border-left: 4px solid #333;
+    margin: 10px 0;
+    text-align: left;
+}
+
+#gameDescription strong {
+    color: #333;
+}
+
 .game-stage {
     background: white;
     border-radius: 15px;
@@ -258,4 +274,3 @@ header p {
         gap: 10px;
     }
 }
-

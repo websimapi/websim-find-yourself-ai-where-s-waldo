@@ -120,17 +120,26 @@ class FindYourselfGame {
                     content: [
                         {
                             type: "text",
-                            text: `Analyze this photo and describe:
-1. The main subject/person and their key visual characteristics (clothing, pose, distinctive features)
-2. The setting/environment where they are
-3. A creative scenario for a "Where's Waldo" style scene where this person would blend into a crowd
+                            text: `Analyze this photo for a "Where's Waldo" style game. I need detailed information to create a scene where this person can be hidden in a crowd.
 
-Respond with JSON in this format:
+Describe:
+1. Physical appearance: age, gender, hair color/style, clothing colors and style, body build, distinctive accessories
+2. Current setting/background in the photo
+3. Pose and body position
+4. Any unique visual elements that would help identify them
+5. Suggested crowd scenario where they would naturally blend in
+
+Be very specific about colors, clothing details, and physical characteristics.
+
+Respond with JSON:
 {
-  "subject": "detailed description of the main person/subject",
-  "setting": "description of the environment/setting",
-  "waldoScenario": "creative crowded scene description where they'd fit in",
-  "subjectKeyFeatures": "distinctive visual elements to help identify them"
+  "physicalDescription": "detailed physical appearance including age, gender, build, hair",
+  "clothingDescription": "specific clothing items, colors, patterns, accessories", 
+  "pose": "current body position and pose",
+  "distinctiveFeatures": "unique identifying elements",
+  "currentSetting": "background/environment in photo",
+  "suggestedScenario": "specific crowd scene where they'd fit naturally",
+  "searchInstructions": "what the player should look for to find them"
 }`
                         },
                         {
@@ -147,10 +156,30 @@ Respond with JSON in this format:
     }
 
     async createWaldoScene(analysis) {
-        const prompt = `Create a detailed "Where's Waldo" style crowded scene: ${analysis.waldoScenario}. 
-        Include many people in various activities, but prominently feature someone matching this description: ${analysis.subject}. 
-        The scene should be busy and colorful with lots of visual complexity, similar to classic Where's Waldo illustrations. 
-        Make sure the target person (${analysis.subjectKeyFeatures}) is clearly visible but challenging to spot among the crowd.`;
+        const prompt = `Create a detailed "Where's Waldo" style illustration with the following specifications:
+
+SCENE TYPE: ${analysis.suggestedScenario}
+
+VISUAL STYLE: Classic Where's Waldo illustration style - cartoon-like, colorful, highly detailed with many overlapping characters and objects. The scene should be packed with visual information.
+
+TARGET PERSON TO HIDE: ${analysis.physicalDescription}
+CLOTHING: ${analysis.clothingDescription}
+POSE: ${analysis.pose}
+DISTINCTIVE FEATURES: ${analysis.distinctiveFeatures}
+
+SCENE REQUIREMENTS:
+- Include 50-100 people in various activities
+- Multiple layers of depth with foreground, middle ground, and background elements
+- Bright, vibrant colors throughout
+- Many visual distractions: signs, objects, animals, vehicles
+- The target person should be visible but require careful searching
+- Place the target person at medium size (not tiny, not huge) - about 1/20th of the image height
+- Integrate them naturally into the scene's activities
+- Ensure they maintain their distinctive clothing and features
+- Add similar-looking people as red herrings
+- Include plenty of visual noise and overlapping elements
+
+The scene should be busy, colorful, and engaging like classic Where's Waldo books - packed with details that make finding the target person challenging but fair.`;
 
         const result = await websim.imageGen({
             prompt: prompt,
@@ -162,7 +191,12 @@ Respond with JSON in this format:
 
     setupGame(imageUrl, analysis) {
         document.getElementById('generatedImage').src = imageUrl;
-        document.getElementById('gameDescription').textContent = `Look for: ${analysis.subjectKeyFeatures}`;
+        document.getElementById('gameDescription').innerHTML = `
+            <strong>Find the person who matches this description:</strong><br>
+            👤 ${analysis.physicalDescription}<br>
+            👕 ${analysis.clothingDescription}<br>
+            🎯 ${analysis.searchInstructions}
+        `;
         
         // Wait for image to load before setting up canvas
         document.getElementById('generatedImage').onload = () => {
@@ -342,4 +376,3 @@ Respond with JSON in this format:
 document.addEventListener('DOMContentLoaded', () => {
     new FindYourselfGame();
 });
-
